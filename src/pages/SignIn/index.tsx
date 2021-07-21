@@ -5,7 +5,7 @@ import { Form } from "@unform/web";
 import * as Yup from "yup";
 import getValidationErrors from "../../utils/getValidationErrors";
 
-import { AuthContext } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 import logoImg from "../../assets/logo.svg";
 
@@ -22,7 +22,7 @@ interface SignInFormData {
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  const { user, signIn } = useContext(AuthContext);
+  const { user, signIn } = useAuth();
   console.log("🚀 ~ file: index.tsx ~ line 26 ~ user", user);
 
   const handleSubmit = useCallback(
