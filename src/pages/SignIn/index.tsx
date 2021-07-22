@@ -14,7 +14,7 @@ import logoImg from "../../assets/logo.svg";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 
-import { Container, Content, AnimatedContainer, Background } from "./styles";
+import { Container, Content, AnimationContainer, Background } from "./styles";
 
 interface SignInFormData {
   email: string;
@@ -26,6 +26,7 @@ const SignIn: React.FC = () => {
 
   const { signIn } = useAuth();
   const { addToast } = useToast();
+
   const history = useHistory();
 
   const handleSubmit = useCallback(
@@ -34,7 +35,7 @@ const SignIn: React.FC = () => {
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
-          email: Yup.string().required("Email é obrigatório").email("Digite um e-mail válido"),
+          email: Yup.string().email("Digite um e-mail válido").required("E-mail obrigatório"),
           password: Yup.string().required("Senha obrigatória"),
         });
 
@@ -42,29 +43,35 @@ const SignIn: React.FC = () => {
           abortEarly: false,
         });
 
-        await signIn({ email: data.email, password: data.password });
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
 
         history.push("/dashboard");
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
-          const erros = getValidationErrors(err);
+          const errors = getValidationErrors(err);
 
-          formRef.current?.setErrors(erros);
+          formRef.current?.setErrors(errors);
+
+          return;
         }
+
+        addToast({
+          type: "error",
+          title: "Erro na autenticação",
+          description: "Ocorreu um erro ao fazer login, cheque as credenciais.",
+        });
       }
-      addToast({
-        type: "error",
-        title: "Erro na autenticação",
-        description: "Ocorreu um erro ao fazer login, verifique os dados e tente novamente.",
-      });
     },
-    [addToast, signIn, history]
+    [signIn, addToast, history]
   );
 
   return (
     <Container>
       <Content>
-        <AnimatedContainer>
+        <AnimationContainer>
           <img src={logoImg} alt="GoBarber" />
 
           <Form ref={formRef} onSubmit={handleSubmit}>
@@ -76,15 +83,16 @@ const SignIn: React.FC = () => {
 
             <Button type="submit">Entrar</Button>
 
-            <a href="">Esqueci minha senha</a>
+            <a href="forgot">Esqueci minha senha</a>
           </Form>
 
           <Link to="/signup">
             <FiLogIn />
             Criar conta
           </Link>
-        </AnimatedContainer>
+        </AnimationContainer>
       </Content>
+
       <Background />
     </Container>
   );

@@ -1,9 +1,10 @@
 import React, { useCallback, useRef } from "react";
-import { FiArrowLeft, FiMail, FiUser, FiLock } from "react-icons/fi";
+import { FiArrowLeft, FiUser, FiMail, FiLock } from "react-icons/fi";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import * as Yup from "yup";
 import { Link, useHistory } from "react-router-dom";
+
 import api from "../../services/api";
 
 import { useToast } from "../../hooks/toast";
@@ -15,9 +16,9 @@ import logoImg from "../../assets/logo.svg";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 
-import { Container, Content, AnimatedContainer, Background } from "./styles";
+import { Container, Content, AnimationContainer, Background } from "./styles";
 
-interface SignInFormData {
+interface SignUpFormData {
   name: string;
   email: string;
   password: string;
@@ -29,13 +30,13 @@ const SignUp: React.FC = () => {
   const history = useHistory();
 
   const handleSubmit = useCallback(
-    async (data: SignInFormData) => {
+    async (data: SignUpFormData) => {
       try {
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
-          name: Yup.string().required("Nome é obrigatório"),
-          email: Yup.string().required("Email é obrigatório").email("Digite um e-mail válido"),
+          name: Yup.string().required("Nome obrigatório"),
+          email: Yup.string().email("Digite um e-mail válido").required("E-mail obrigatório"),
           password: Yup.string().min(6, "No mínimo 6 dígitos"),
         });
 
@@ -43,27 +44,30 @@ const SignUp: React.FC = () => {
           abortEarly: false,
         });
 
-        await api.post("./users", data);
+        await api.post("/users", data);
 
         history.push("/");
 
         addToast({
           type: "success",
           title: "Cadastro realizado!",
-          description: "Você já pode fazer seu logon no GoBarber",
+          description: "Você já pode fazer seu logon no GoBarber!",
         });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
-          const erros = getValidationErrors(err);
+          const errors = getValidationErrors(err);
 
-          formRef.current?.setErrors(erros);
+          formRef.current?.setErrors(errors);
+
+          return;
         }
+
+        addToast({
+          type: "error",
+          title: "Erro no cadastro",
+          description: "Ocorreu um erro ao fazer cadastro, tente novamente.",
+        });
       }
-      addToast({
-        type: "error",
-        title: "Erro na cadastro",
-        description: "Ocorreu um erro ao fazer cadastro, tente novamente.",
-      });
     },
     [addToast, history]
   );
@@ -72,7 +76,7 @@ const SignUp: React.FC = () => {
     <Container>
       <Background />
       <Content>
-        <AnimatedContainer>
+        <AnimationContainer>
           <img src={logoImg} alt="GoBarber" />
 
           <Form ref={formRef} onSubmit={handleSubmit}>
@@ -91,7 +95,7 @@ const SignUp: React.FC = () => {
             <FiArrowLeft />
             Voltar para logon
           </Link>
-        </AnimatedContainer>
+        </AnimationContainer>
       </Content>
     </Container>
   );

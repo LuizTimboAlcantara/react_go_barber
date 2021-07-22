@@ -8,13 +8,15 @@ import SignUp from "../pages/SignUp";
 
 import Dashboard from "../pages/Dashboard";
 
-const Routes: React.FC = () => (
-  <Switch>
-    <Route path="/" exact component={SignIn} />
-    <Route path="/signup" component={SignUp} />
+const Routes: React.FC = () => {
+  return (
+    <Switch>
+      <Route path="/" exact component={SignIn} />
+      <Route path="/signup" component={SignUp} />
 
-    <Route path="/dashboard" component={Dashboard} />
-  </Switch>
-);
+      <Route path="/dashboard" component={Dashboard} isPrivate />
+    </Switch>
+  );
+};
 
 export default Routes;

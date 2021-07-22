@@ -31,7 +31,7 @@ const appearFromRight = keyframes`
   }
 `;
 
-export const AnimatedContainer = styled.div`
+export const AnimationContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
